@@ -1,8 +1,22 @@
-import 'package:flutter/material.dart';
-import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import "package:flutter/material.dart";
+import "../actions/login_action.dart";
+import "package:mask_text_input_formatter/mask_text_input_formatter.dart";
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
+
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final TextEditingController _cpfController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  final MaskTextInputFormatter _cpfFormatter = MaskTextInputFormatter(
+    mask: '###.###.###-##',
+    filter: {"#": RegExp(r'[0-9]')},
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -45,12 +59,8 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 50.0),
               // Campo CPF
               TextField(
-                inputFormatters: [
-                  MaskTextInputFormatter(
-                    mask: '###.###.###-##',
-                    filter: {"#": RegExp(r'[0-9]')},
-                  )
-                ],
+                controller: _cpfController,
+                inputFormatters: [_cpfFormatter],
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                     hintText: 'CPF',
@@ -69,6 +79,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 16.0),
               // Campo Senha
               TextField(
+                controller: _passwordController,
                 obscureText: true,
                 decoration: InputDecoration(
                     hintText: 'Senha do App',
@@ -81,14 +92,17 @@ class LoginPage extends StatelessWidget {
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: const BorderSide(
-                            width: 2, color: Color(0xFF3C37BB)))),
+                            width: 1, color: Color(0xFF3C37BB)))),
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 50.0),
               // Botão Entrar
               ElevatedButton(
                 onPressed: () {
-                  // Implementar ação do botão aqui
+                  final cpf = _cpfFormatter.getUnmaskedText();
+                  final password = _passwordController.text;
+
+                  loginAction(cpf, password);
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
