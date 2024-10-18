@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import "../actions/login_action.dart";
 
 class AccountSelection extends StatefulWidget {
@@ -7,9 +8,23 @@ class AccountSelection extends StatefulWidget {
 }
 
 class _AccountSelectionState extends State<AccountSelection> {
+  @override
+  void initState() {
+    super.initState();
+    _getUserInfo();
+  }
+
   int _selectedAccount = 0;
   int qnt_pass_digits = 0;
   List<String> password_buttons = [];
+  String nickname = "";
+
+  Future<void> _getUserInfo() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      nickname = prefs.getString('nickname') ?? "";
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,13 +38,13 @@ class _AccountSelectionState extends State<AccountSelection> {
           //     MainAxisAlignment.center, // Centraliza verticalmente
           children: [
             // Saudação
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.center, // Centraliza a Row
               children: [
-                Icon(Icons.person, size: 30, color: Colors.white),
-                SizedBox(width: 10),
-                Text('Olá, Gilberto!',
-                    style: TextStyle(fontSize: 18, color: Colors.white)),
+                const Icon(Icons.person, size: 30, color: Colors.white),
+                const SizedBox(width: 10),
+                Text('Olá, $nickname',
+                    style: const TextStyle(fontSize: 18, color: Colors.white)),
               ],
             ),
             const SizedBox(height: 30),
@@ -110,10 +125,13 @@ class _AccountSelectionState extends State<AccountSelection> {
             SizedBox(
                 width: 175,
                 child: ElevatedButton(
-                  onPressed: () {
-                    final account_id = "a6c4e178-da63-4ec5-bc28-66c1179b26ae";
-                    final password = "123456";
-                    accountLogin(account_id, password);
+                  onPressed: () async {
+                    const accountId = "a6c4e178-da63-4ec5-bc28-66c1179b26ae";
+                    const password = "123456";
+                    var logged = await accountLogin(accountId, password);
+                    if (logged) {
+                      Navigator.of(context).pushReplacementNamed('/home');
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
@@ -133,28 +151,6 @@ class _AccountSelectionState extends State<AccountSelection> {
       ),
     );
   }
-
-  // Widget _buildPasswordBox(bool isFilled) {
-  //   return Container(
-  //     margin: const EdgeInsets.all(10.0),
-  //     height: 50,
-  //     width: 50,
-  //     decoration: BoxDecoration(
-  //       color: const Color(0xFF131212),
-  //       border: Border.all(
-  //         color: Colors.white,
-  //         width: 1,
-  //       ),
-  //       borderRadius: const BorderRadius.all(Radius.circular(10)),
-  //     ),
-  //     child: Center(
-  //       child: Text(
-  //         isFilled ? "*" : "",
-  //         style: const TextStyle(color: Colors.white, fontSize: 24),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildPasswordBox(bool isFilled) {
     return Expanded(

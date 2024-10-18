@@ -98,11 +98,14 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(height: 50.0),
               // Botão Entrar
               ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   final cpf = _cpfFormatter.getUnmaskedText();
                   final password = _passwordController.text;
-
-                  userLogin(cpf, password);
+                  var logged = await userLogin(cpf, password);
+                  if (logged) {
+                    Navigator.of(context)
+                        .pushReplacementNamed('/account-selection');
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),

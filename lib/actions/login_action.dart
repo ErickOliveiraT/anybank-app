@@ -16,7 +16,7 @@ class SessionInfo {
       required this.token});
 }
 
-Future<void> userLogin(String cpf, String password) async {
+Future<bool> userLogin(String cpf, String password) async {
   const url = 'http://localhost:3000/auth/user/login';
 
   try {
@@ -31,27 +31,23 @@ Future<void> userLogin(String cpf, String password) async {
       }),
     );
 
-    // Verifica se a resposta foi bem-sucedida (status code 200)
     if (response.statusCode == 200) {
-      // Converte a resposta JSON para um Map
       final Map<String, dynamic> data = jsonDecode(response.body);
       await saveNicknameAndToken(data['user']['nickname'], data['token']);
 
-      // Exibe a mensagem de sucesso
       print('Login bem-sucedido: ${data['message']}');
-
-      // Lógica adicional se o login for bem-sucedido
+      return true;
     } else {
-      // Caso o status code não seja 200, exibe a mensagem de erro
       print('Falha no login: ${response.body}');
+      return false;
     }
   } catch (error) {
-    // Tratar erros de conexão ou requisição
     print('Erro na requisição: $error');
+    return false;
   }
 }
 
-Future<void> accountLogin(String accountId, String password) async {
+Future<bool> accountLogin(String accountId, String password) async {
   const url = 'http://localhost:3000/auth/account/login';
 
   try {
@@ -66,9 +62,7 @@ Future<void> accountLogin(String accountId, String password) async {
       }),
     );
 
-    // Verifica se a resposta foi bem-sucedida (status code 200)
     if (response.statusCode == 200) {
-      // Converte a resposta JSON para um Map
       final Map<String, dynamic> data = jsonDecode(response.body);
       final SessionInfo sessionData = SessionInfo(
         user: jsonEncode(data['user']),
@@ -78,17 +72,46 @@ Future<void> accountLogin(String accountId, String password) async {
       );
       await saveSessionInfo(sessionData);
 
-      // Exibe a mensagem de sucesso
       print('Login bem-sucedido: ${data['message']}');
-
-      // Lógica adicional se o login for bem-sucedido
+      return true;
     } else {
-      // Caso o status code não seja 200, exibe a mensagem de erro
       print('Falha no login: ${response.body}');
+      return false;
     }
   } catch (error) {
-    // Tratar erros de conexão ou requisição
     print('Erro na requisição: $error');
+    return false;
+  }
+}
+
+Future checkSession(String entity) async {
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  if (!prefs.containsKey(entity == "user" ? 'user_token' : 'account_token')) {
+    return false;
+  }
+
+  final token =
+      prefs.getString(entity == "user" ? 'user_token' : 'account_token');
+
+  if (token == null) {
+    return false;
+  }
+
+  const url = 'http://localhost:3000/auth/token/validate';
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8'
+      },
+      body: jsonEncode(<String, String>{'token': token}),
+    );
+    final Map<String, dynamic> data = jsonDecode(response.body);
+    return data['valid'];
+  } catch (error) {
+    // Tratar erros de conexão ou requisição
+    print('Erro na requisição em checkUserSession(): $error');
+    return false;
   }
 }
 
