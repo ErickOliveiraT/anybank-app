@@ -134,31 +134,8 @@ class _AccountSelectionState extends State<AccountSelection> {
     );
   }
 
-  // Widget _buildPasswordBox(bool isFilled) {
-  //   return Container(
-  //     margin: const EdgeInsets.all(10.0),
-  //     height: 50,
-  //     width: 50,
-  //     decoration: BoxDecoration(
-  //       color: const Color(0xFF131212),
-  //       border: Border.all(
-  //         color: Colors.white,
-  //         width: 1,
-  //       ),
-  //       borderRadius: const BorderRadius.all(Radius.circular(10)),
-  //     ),
-  //     child: Center(
-  //       child: Text(
-  //         isFilled ? "*" : "",
-  //         style: const TextStyle(color: Colors.white, fontSize: 24),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildPasswordBox(bool isFilled) {
-    return Expanded(
-        child: Container(
+    return Container(
       margin: const EdgeInsets.all(10.0),
       height: 50,
       width: 50,
@@ -176,7 +153,7 @@ class _AccountSelectionState extends State<AccountSelection> {
           style: const TextStyle(color: Colors.white, fontSize: 24),
         ),
       ),
-    ));
+    );
   }
 
   Widget _buildButtons() {
@@ -185,70 +162,58 @@ class _AccountSelectionState extends State<AccountSelection> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center, // Centraliza os botões
           children: [
-            Expanded(
-              child: _buildPasswordButton("1 ou 4", () {
-                if (password_buttons.length >= 6) return;
-                password_buttons.add("1.4");
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("1 ou 4", () {
+              if (password_buttons.length >= 6) return;
+              password_buttons.add("1.4");
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
             const SizedBox(width: 10),
-            Expanded(
-              child: _buildPasswordButton("2 ou 9", () {
-                if (password_buttons.length >= 6) return;
-                password_buttons.add("2.9");
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("2 ou 9", () {
+              if (password_buttons.length >= 6) return;
+              password_buttons.add("2.9");
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
             const SizedBox(width: 10),
-            Expanded(
-              child: _buildPasswordButton("5 ou 7", () {
-                if (password_buttons.length >= 6) return;
-                password_buttons.add("5.7");
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("5 ou 7", () {
+              if (password_buttons.length >= 6) return;
+              password_buttons.add("5.7");
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
           ],
         ),
         const SizedBox(height: 10),
         Row(
           mainAxisAlignment: MainAxisAlignment.center, // Centraliza os botões
           children: [
-            Expanded(
-              child: _buildPasswordButton("0 ou 6", () {
-                if (password_buttons.length >= 6) return;
-                password_buttons.add("0.6");
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("0 ou 6", () {
+              if (password_buttons.length >= 6) return;
+              password_buttons.add("0.6");
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
             const SizedBox(width: 10),
-            Expanded(
-              child: _buildPasswordButton("3 ou 8", () {
-                if (password_buttons.length >= 6) return;
-                password_buttons.add("3.8");
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("3 ou 8", () {
+              if (password_buttons.length >= 6) return;
+              password_buttons.add("3.8");
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
             const SizedBox(width: 10),
-            Expanded(
-              child: _buildPasswordButton("Del", () {
-                if (password_buttons.isEmpty) return;
-                password_buttons.removeLast();
-                setState(() {
-                  qnt_pass_digits = password_buttons.length;
-                });
-              }),
-            ),
+            _buildPasswordButton("Del", () {
+              if (password_buttons.isEmpty) return;
+              password_buttons.removeLast();
+              setState(() {
+                qnt_pass_digits = password_buttons.length;
+              });
+            }),
           ],
         ),
       ],

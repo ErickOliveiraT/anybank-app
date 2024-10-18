@@ -102,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   final cpf = _cpfFormatter.getUnmaskedText();
                   final password = _passwordController.text;
 
-                  loginAction(cpf, password);
+                  userLogin(cpf, password);
                 },
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
