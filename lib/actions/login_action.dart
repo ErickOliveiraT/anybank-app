@@ -2,18 +2,28 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SessionInfo {
+class AccountSessionInfo {
   final String token;
   final String user;
   final String account;
   final String lastTransactions;
 
   // Construtor
-  SessionInfo(
+  AccountSessionInfo(
       {required this.user,
       required this.account,
       required this.lastTransactions,
       required this.token});
+}
+
+class UserSessionInfo {
+  final String token;
+  final String accounts;
+  final String nickname;
+
+  // Construtor
+  UserSessionInfo(
+      {required this.token, required this.accounts, required this.nickname});
 }
 
 Future<bool> userLogin(String cpf, String password) async {
@@ -33,7 +43,11 @@ Future<bool> userLogin(String cpf, String password) async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-      await saveNicknameAndToken(data['user']['nickname'], data['token']);
+      final UserSessionInfo sessionData = UserSessionInfo(
+          accounts: jsonEncode(data['accounts']),
+          token: data['token'],
+          nickname: data['user']['nickname']);
+      await saveUserSessionInfo(sessionData);
 
       print('Login bem-sucedido: ${data['message']}');
       return true;
@@ -64,13 +78,13 @@ Future<bool> accountLogin(String accountId, String password) async {
 
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
-      final SessionInfo sessionData = SessionInfo(
+      final AccountSessionInfo sessionData = AccountSessionInfo(
         user: jsonEncode(data['user']),
         account: jsonEncode(data['account']),
         lastTransactions: jsonEncode(data['last_transactions']),
         token: data['token'],
       );
-      await saveSessionInfo(sessionData);
+      await saveAccountSessionInfo(sessionData);
 
       print('Login bem-sucedido: ${data['message']}');
       return true;
@@ -115,7 +129,7 @@ Future checkSession(String entity) async {
   }
 }
 
-Future<void> saveSessionInfo(SessionInfo data) async {
+Future<void> saveAccountSessionInfo(AccountSessionInfo data) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('account_token', data.token);
   await prefs.setString('user', data.user);
@@ -123,10 +137,11 @@ Future<void> saveSessionInfo(SessionInfo data) async {
   await prefs.setString('last_transactions', data.lastTransactions);
 }
 
-Future<void> saveNicknameAndToken(String nickname, String token) async {
+Future<void> saveUserSessionInfo(UserSessionInfo data) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
-  await prefs.setString('nickname', nickname);
-  await prefs.setString('user_token', token);
+  await prefs.setString('nickname', data.nickname);
+  await prefs.setString('user_token', data.token);
+  await prefs.setString('accounts', data.accounts);
 }
 
 Future<String?> getToken() async {

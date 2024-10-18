@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "../actions/login_action.dart";
@@ -18,11 +20,18 @@ class _AccountSelectionState extends State<AccountSelection> {
   int qnt_pass_digits = 0;
   List<String> password_buttons = [];
   String nickname = "";
+  String accountBranch = "";
+  String accountNumber = "";
 
   Future<void> _getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    final accounts = prefs.getString('accounts');
+    final account = accounts != null ? jsonDecode(accounts)[0] : null;
+
     setState(() {
       nickname = prefs.getString('nickname') ?? "";
+      accountBranch = account['agency'] ?? "";
+      accountNumber = account['number'] ?? "";
     });
   }
 
@@ -43,7 +52,7 @@ class _AccountSelectionState extends State<AccountSelection> {
               children: [
                 const Icon(Icons.person, size: 30, color: Colors.white),
                 const SizedBox(width: 10),
-                Text('Olá, $nickname',
+                Text('Olá, $nickname!',
                     style: const TextStyle(fontSize: 18, color: Colors.white)),
               ],
             ),
@@ -64,21 +73,21 @@ class _AccountSelectionState extends State<AccountSelection> {
                 mainAxisAlignment:
                     MainAxisAlignment.spaceBetween, // Espaçamento entre itens
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment
                           .center, // Centraliza os textos na Column
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           'Conta Corrente',
                           style: TextStyle(color: Colors.white),
                         ),
-                        SizedBox(height: 5),
+                        const SizedBox(height: 5),
                         Text(
-                          'Ag: 0001\nCc: 12331-8',
-                          style: TextStyle(color: Colors.white),
+                          'Ag: $accountBranch\nCc: $accountNumber',
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ],
                     ),
