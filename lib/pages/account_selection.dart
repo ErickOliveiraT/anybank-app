@@ -23,6 +23,7 @@ class _AccountSelectionState extends State<AccountSelection> {
   String accountBranch = "";
   String accountNumber = "";
   String accountPublicId = "";
+  bool loading = false;
 
   Future<void> _getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -137,8 +138,15 @@ class _AccountSelectionState extends State<AccountSelection> {
                 width: 175,
                 child: ElevatedButton(
                   onPressed: () async {
+                    if (loading) return;
+                    setState(() {
+                      loading = true;
+                    });
                     var logged =
                         await accountLogin(accountPublicId, password_buttons);
+                    setState(() {
+                      loading = false;
+                    });
                     if (logged) {
                       Navigator.of(context).pushReplacementNamed('/home');
                     }
@@ -149,12 +157,21 @@ class _AccountSelectionState extends State<AccountSelection> {
                     ),
                     backgroundColor: const Color(0xFF3C37BB),
                   ),
-                  child: const Text(
-                    'Entrar',
-                    style: TextStyle(
-                      color: Color(0xFFFEFEFE),
-                    ),
-                  ),
+                  child: loading
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                                Color(0xFFFEFEFE)),
+                            strokeWidth: 2.0,
+                          ))
+                      : const Text(
+                          'Entrar',
+                          style: TextStyle(
+                            color: Color(0xFFFEFEFE),
+                          ),
+                        ),
                 ))
           ],
         ),

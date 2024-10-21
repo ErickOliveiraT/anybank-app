@@ -12,6 +12,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final TextEditingController _cpfController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool loading = false;
 
   final MaskTextInputFormatter _cpfFormatter = MaskTextInputFormatter(
     mask: '###.###.###-##',
@@ -99,9 +100,16 @@ class _LoginPageState extends State<LoginPage> {
               // Botão Entrar
               ElevatedButton(
                 onPressed: () async {
+                  if (loading) return;
+                  setState(() {
+                    loading = true;
+                  });
                   final cpf = _cpfFormatter.getUnmaskedText();
                   final password = _passwordController.text;
                   var logged = await userLogin(cpf, password);
+                  setState(() {
+                    loading = false;
+                  });
                   if (logged) {
                     Navigator.of(context)
                         .pushReplacementNamed('/account-selection');
@@ -113,12 +121,21 @@ class _LoginPageState extends State<LoginPage> {
                       borderRadius: BorderRadius.circular(10.0),
                     ),
                     backgroundColor: const Color(0xFF3C37BB)),
-                child: const Text(
-                  'Entrar',
-                  style: TextStyle(
-                    color: Color(0xFFFEFEFE),
-                  ),
-                ),
+                child: loading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Color(0xFFFEFEFE)),
+                          strokeWidth: 2.0,
+                        ))
+                    : const Text(
+                        'Entrar',
+                        style: TextStyle(
+                          color: Color(0xFFFEFEFE),
+                        ),
+                      ),
               ),
               const SizedBox(height: 75.0),
               // Link "Esqueci minha senha"
