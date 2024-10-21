@@ -61,7 +61,7 @@ Future<bool> userLogin(String cpf, String password) async {
   }
 }
 
-Future<bool> accountLogin(String accountId, String password) async {
+Future<bool> accountLogin(String accountId, List<String> password) async {
   const url = 'http://localhost:3000/auth/account/login';
 
   try {
@@ -72,7 +72,7 @@ Future<bool> accountLogin(String accountId, String password) async {
       },
       body: jsonEncode(<String, String>{
         'id_public': accountId,
-        'password': password,
+        'password': jsonEncode(password)
       }),
     );
 

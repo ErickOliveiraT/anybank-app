@@ -22,6 +22,7 @@ class _AccountSelectionState extends State<AccountSelection> {
   String nickname = "";
   String accountBranch = "";
   String accountNumber = "";
+  String accountPublicId = "";
 
   Future<void> _getUserInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -32,6 +33,7 @@ class _AccountSelectionState extends State<AccountSelection> {
       nickname = prefs.getString('nickname') ?? "";
       accountBranch = account['agency'] ?? "";
       accountNumber = account['number'] ?? "";
+      accountPublicId = account['id_public'] ?? "";
     });
   }
 
@@ -135,9 +137,8 @@ class _AccountSelectionState extends State<AccountSelection> {
                 width: 175,
                 child: ElevatedButton(
                   onPressed: () async {
-                    const accountId = "a6c4e178-da63-4ec5-bc28-66c1179b26ae";
-                    const password = "123456";
-                    var logged = await accountLogin(accountId, password);
+                    var logged =
+                        await accountLogin(accountPublicId, password_buttons);
                     if (logged) {
                       Navigator.of(context).pushReplacementNamed('/home');
                     }
