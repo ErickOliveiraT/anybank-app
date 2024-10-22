@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import "../actions/login_action.dart";
 import "package:mask_text_input_formatter/mask_text_input_formatter.dart";
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +19,18 @@ class _LoginPageState extends State<LoginPage> {
     mask: '###.###.###-##',
     filter: {"#": RegExp(r'[0-9]')},
   );
+
+  void _showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM, // Posição do toast
+        timeInSecForIosWeb: 1, // Tempo que ficará visível no iOS
+        backgroundColor: Colors.red, // Cor de fundo
+        textColor: Colors.white, // Cor do texto
+        fontSize: 16.0 // Tamanho da fonte
+        );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -106,13 +119,15 @@ class _LoginPageState extends State<LoginPage> {
                   });
                   final cpf = _cpfFormatter.getUnmaskedText();
                   final password = _passwordController.text;
-                  var logged = await userLogin(cpf, password);
+                  var loginResponse = await userLogin(cpf, password);
                   setState(() {
                     loading = false;
                   });
-                  if (logged) {
+                  if (loginResponse.success) {
                     Navigator.of(context)
                         .pushReplacementNamed('/account-selection');
+                  } else {
+                    _showToast(loginResponse.message[0]);
                   }
                 },
                 style: ElevatedButton.styleFrom(

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "../actions/login_action.dart";
 
@@ -36,6 +37,18 @@ class _AccountSelectionState extends State<AccountSelection> {
       accountNumber = account['number'] ?? "";
       accountPublicId = account['id_public'] ?? "";
     });
+  }
+
+  void _showToast(String msg) {
+    Fluttertoast.showToast(
+        msg: msg,
+        toastLength: Toast.LENGTH_LONG,
+        gravity: ToastGravity.BOTTOM, // Posição do toast
+        timeInSecForIosWeb: 1, // Tempo que ficará visível no iOS
+        backgroundColor: Colors.red, // Cor de fundo
+        textColor: Colors.white, // Cor do texto
+        fontSize: 16.0 // Tamanho da fonte
+        );
   }
 
   @override
@@ -142,13 +155,15 @@ class _AccountSelectionState extends State<AccountSelection> {
                     setState(() {
                       loading = true;
                     });
-                    var logged =
+                    var loginResponse =
                         await accountLogin(accountPublicId, password_buttons);
                     setState(() {
                       loading = false;
                     });
-                    if (logged) {
+                    if (loginResponse.success) {
                       Navigator.of(context).pushReplacementNamed('/home');
+                    } else {
+                      _showToast(loginResponse.message[0]);
                     }
                   },
                   style: ElevatedButton.styleFrom(

@@ -2,6 +2,22 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
+// ignore: constant_identifier_names
+const String API_URL = 'http://localhost:3000/auth';
+
+class LoginResponse {
+  final List<dynamic> message;
+  final String? error;
+  final int statusCode;
+  final bool success;
+
+  LoginResponse(
+      {required this.message,
+      required this.error,
+      required this.statusCode,
+      required this.success});
+}
+
 class AccountSessionInfo {
   final String token;
   final String user;
@@ -26,8 +42,8 @@ class UserSessionInfo {
       {required this.token, required this.accounts, required this.nickname});
 }
 
-Future<bool> userLogin(String cpf, String password) async {
-  const url = 'http://localhost:3000/auth/user/login';
+Future<LoginResponse> userLogin(String cpf, String password) async {
+  const url = '$API_URL/user/login';
 
   try {
     final response = await http.post(
@@ -41,28 +57,38 @@ Future<bool> userLogin(String cpf, String password) async {
       }),
     );
 
+    final Map<String, dynamic> data = jsonDecode(response.body);
+
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
       final UserSessionInfo sessionData = UserSessionInfo(
           accounts: jsonEncode(data['accounts']),
           token: data['token'],
           nickname: data['user']['nickname']);
       await saveUserSessionInfo(sessionData);
 
-      print('Login bem-sucedido: ${data['message']}');
-      return true;
+      return LoginResponse(
+        message: data['message'],
+        error: data['error'],
+        statusCode: data['statusCode'],
+        success: true,
+      );
     } else {
-      print('Falha no login: ${response.body}');
-      return false;
+      return LoginResponse(
+          message: jsonDecode(response.body)['message'],
+          error: jsonDecode(response.body)['error'],
+          statusCode: jsonDecode(response.body)['statusCode'],
+          success: false);
     }
   } catch (error) {
     print('Erro na requisição: $error');
-    return false;
+    return LoginResponse(
+        message: [], error: error.toString(), statusCode: 500, success: false);
   }
 }
 
-Future<bool> accountLogin(String accountId, List<String> password) async {
-  const url = 'http://localhost:3000/auth/account/login';
+Future<LoginResponse> accountLogin(
+    String accountId, List<String> password) async {
+  const url = '$API_URL/account/login';
 
   try {
     final response = await http.post(
@@ -84,17 +110,26 @@ Future<bool> accountLogin(String accountId, List<String> password) async {
         lastTransactions: jsonEncode(data['last_transactions']),
         token: data['token'],
       );
+
       await saveAccountSessionInfo(sessionData);
 
-      print('Login bem-sucedido: ${data['message']}');
-      return true;
+      return LoginResponse(
+        message: data['message'],
+        error: data['error'],
+        statusCode: data['statusCode'],
+        success: true,
+      );
     } else {
-      print('Falha no login: ${response.body}');
-      return false;
+      return LoginResponse(
+          message: jsonDecode(response.body)['message'],
+          error: jsonDecode(response.body)['error'],
+          statusCode: jsonDecode(response.body)['statusCode'],
+          success: false);
     }
   } catch (error) {
     print('Erro na requisição: $error');
-    return false;
+    return LoginResponse(
+        message: [], error: error.toString(), statusCode: 500, success: false);
   }
 }
 
@@ -111,7 +146,7 @@ Future checkSession(String entity) async {
     return false;
   }
 
-  const url = 'http://localhost:3000/auth/token/validate';
+  const url = '$API_URL/token/validate';
   try {
     final response = await http.post(
       Uri.parse(url),
