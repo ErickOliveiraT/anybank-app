@@ -30,9 +30,49 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
+      backgroundColor: Color(0xFF131212),
       body: Center(
-        child:
-            CircularProgressIndicator(), // Exibe uma animação de carregamento enquanto verifica o token
+        child: Padding(
+          padding: EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Logo
+              Column(
+                children: [
+                  Icon(
+                    Icons.receipt_long,
+                    size: 80.0,
+                    color: Color(0xFFFEFEFE),
+                  ),
+                  SizedBox(height: 16.0),
+                  Text(
+                    'AnyBank',
+                    style: TextStyle(
+                      fontSize: 32.0,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFFFEFEFE),
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  Text(
+                    'DO JEITO QUE VOCÊ QUISER',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Color(0xFFFEFEFE),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 50.0),
+              // Loading
+              CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFFEFEFE)),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
