@@ -9,7 +9,7 @@ void main() {
     initialRoute: '/',
     routes: {
       '/': (context) => SplashScreen(),
-      '/home': (context) => HomePage(),
+      '/home': (context) => const HomePage(),
       '/login': (context) => const LoginPage(),
       '/account-selection': (context) => AccountSelection(),
     },

@@ -1,10 +1,11 @@
-// import 'package:intl/intl.dart';
+import 'package:intl/intl.dart';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -19,7 +20,7 @@ class _HomePageState extends State<HomePage> {
   double accountBalance = 0;
   double accountLimit = 0;
   String nickname = "";
-  String lastTransactionsJson = "";
+  List<dynamic> lastTransactions = [];
 
   Future<void> _getAccountInfo() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -29,7 +30,8 @@ class _HomePageState extends State<HomePage> {
       nickname = prefs.getString('nickname') ?? "";
       accountBalance = account['balance'] ?? "";
       accountLimit = account['credit_limit'] ?? "";
-      lastTransactionsJson = prefs.getString('last_transactions') ?? "";
+      lastTransactions =
+          jsonDecode(prefs.getString('last_transactions') ?? '"[]"');
     });
   }
 
@@ -71,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                   width: double.infinity,
                   height: 120,
                   child: (Padding(
-                      padding: EdgeInsets.only(left: 15),
+                      padding: const EdgeInsets.only(left: 15),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
@@ -113,23 +115,13 @@ class _HomePageState extends State<HomePage> {
               const Text("Últimas movimentações",
                   style: TextStyle(color: Colors.white, fontSize: 16)),
               const SizedBox(height: 20),
-              // _buildLastTransactions()
-              _buildTransactionItem(true, false, "Depósito em conta", 500.45,
-                  "18/10/24 12:00", "credit"),
-              _buildTransactionItem(false, false, "Pagamento de boleto", 150.45,
-                  "17/10/24 13:45", "debit"),
-              _buildTransactionItem(false, false, "Pagamento de boleto", 200.65,
-                  "17/10/24 13:45", "debit"),
-              _buildTransactionItem(false, true, "Transferência recebida",
-                  321.21, "16/10/24 13:45", "credit"),
+              _buildLastTransactions()
             ],
           )),
     );
   }
 
   Widget _buildLastTransactions() {
-    final lastTransactions = jsonDecode(lastTransactionsJson);
-    print(lastTransactions);
     List<Widget> transactionItems = [];
     for (var i = 0; i < lastTransactions.length; i++) {
       transactionItems.add(_buildTransactionItem(
@@ -264,9 +256,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   String formatDate(String isoDate) {
-    return isoDate;
-    // DateTime parsedDate = DateTime.parse(isoDate);
-    // DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
-    // return formatter.format(parsedDate);
+    DateTime parsedDate = DateTime.parse(isoDate);
+    DateFormat formatter = DateFormat('dd/MM/yyyy HH:mm');
+    return formatter.format(parsedDate);
   }
 }
