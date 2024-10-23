@@ -203,10 +203,13 @@ class _HomePageState extends State<HomePage> {
                   MainAxisAlignment.spaceBetween, // Centraliza os botões
               children: [
                 _buildFunctionButton(
-                    "Extrato", Icons.format_list_bulleted_sharp),
-                _buildFunctionButton("Transferir", Icons.send_outlined),
-                _buildFunctionButton("Boletos", Icons.account_balance_outlined),
-                _buildFunctionButton("Cartões", Icons.credit_card),
+                    "Extrato", Icons.format_list_bulleted_sharp, "/transfer1"),
+                _buildFunctionButton(
+                    "Transferir", Icons.send_outlined, "/transfer1"),
+                _buildFunctionButton(
+                    "Boletos", Icons.account_balance_outlined, "/transfer2"),
+                _buildFunctionButton(
+                    "Cartões", Icons.credit_card, "/transfer1"),
               ],
             )),
         const SizedBox(height: 20),
@@ -216,39 +219,46 @@ class _HomePageState extends State<HomePage> {
               mainAxisAlignment:
                   MainAxisAlignment.spaceBetween, // Centraliza os botões
               children: [
-                _buildFunctionButton("Crédito", Icons.diamond_outlined),
-                _buildFunctionButton("Investir", Icons.trending_up),
-                _buildFunctionButton("Segurança", Icons.lock_outline),
-                _buildFunctionButton("Config", Icons.settings),
+                _buildFunctionButton(
+                    "Crédito", Icons.diamond_outlined, "/transfer1"),
+                _buildFunctionButton(
+                    "Investir", Icons.trending_up, "/transfer1"),
+                _buildFunctionButton(
+                    "Segurança", Icons.lock_outline, "/transfer1"),
+                _buildFunctionButton("Config", Icons.settings, "/transfer1"),
               ],
             )),
       ],
     );
   }
 
-  Widget _buildFunctionButton(String title, IconData icon) {
-    return Column(children: [
-      Container(
-        width: 75,
-        height: 75,
-        decoration: const BoxDecoration(
-          color: Color(0xFF333338),
-          borderRadius: BorderRadius.all(Radius.circular(10)),
-        ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Icon(icon, size: 40, color: Colors.white),
-          ],
-        ),
-      ),
-      const SizedBox(height: 5),
-      Text(
-        title,
-        style: const TextStyle(color: Colors.white, fontSize: 16),
-      )
-    ]);
+  Widget _buildFunctionButton(String title, IconData icon, String path) {
+    return GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(path);
+        },
+        child: Column(children: [
+          Container(
+            width: 75,
+            height: 75,
+            decoration: const BoxDecoration(
+              color: Color(0xFF333338),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(icon, size: 40, color: Colors.white),
+              ],
+            ),
+          ),
+          const SizedBox(height: 5),
+          Text(
+            title,
+            style: const TextStyle(color: Colors.white, fontSize: 16),
+          )
+        ]));
   }
 
   String formatCurrency(double value) {
