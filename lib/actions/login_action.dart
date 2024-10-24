@@ -10,26 +10,23 @@ class LoginResponse {
   final String? error;
   final int statusCode;
   final bool success;
+  final Map<String, dynamic>? user;
+  final Map<String, dynamic>? account;
+  final List<dynamic>? lastTransactions;
 
   LoginResponse(
       {required this.message,
       required this.error,
       required this.statusCode,
-      required this.success});
+      required this.success,
+      this.user,
+      this.account,
+      this.lastTransactions});
 }
 
 class AccountSessionInfo {
   final String token;
-  final String user;
-  final String account;
-  final String lastTransactions;
-
-  // Construtor
-  AccountSessionInfo(
-      {required this.user,
-      required this.account,
-      required this.lastTransactions,
-      required this.token});
+  AccountSessionInfo({required this.token});
 }
 
 class UserSessionInfo {
@@ -105,20 +102,19 @@ Future<LoginResponse> accountLogin(
     if (response.statusCode == 200) {
       final Map<String, dynamic> data = jsonDecode(response.body);
       final AccountSessionInfo sessionData = AccountSessionInfo(
-        user: jsonEncode(data['user']),
-        account: jsonEncode(data['account']),
-        lastTransactions: jsonEncode(data['last_transactions']),
         token: data['token'],
       );
 
       await saveAccountSessionInfo(sessionData);
 
       return LoginResponse(
-        message: data['message'],
-        error: data['error'],
-        statusCode: data['statusCode'],
-        success: true,
-      );
+          message: data['message'],
+          error: data['error'],
+          statusCode: data['statusCode'],
+          success: true,
+          user: data['user'],
+          account: data['account'],
+          lastTransactions: data['last_transactions']);
     } else {
       return LoginResponse(
           message: jsonDecode(response.body)['message'],
@@ -167,9 +163,6 @@ Future checkSession(String entity) async {
 Future<void> saveAccountSessionInfo(AccountSessionInfo data) async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   await prefs.setString('account_token', data.token);
-  await prefs.setString('user', data.user);
-  await prefs.setString('account', data.account);
-  await prefs.setString('last_transactions', data.lastTransactions);
 }
 
 Future<void> saveUserSessionInfo(UserSessionInfo data) async {

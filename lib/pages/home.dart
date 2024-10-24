@@ -1,7 +1,7 @@
+import 'package:anybank_app/config/provider.dart';
 import 'package:intl/intl.dart';
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,15 +23,15 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> lastTransactions = [];
 
   Future<void> _getAccountInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final account = jsonDecode(prefs.getString('account') ?? "{}");
+    final userData = Provider.of<UserData>(context, listen: false);
+    final account = userData.account;
+    final user = userData.user;
 
     setState(() {
-      nickname = prefs.getString('nickname') ?? "";
-      accountBalance = account['balance'] ?? "";
-      accountLimit = account['credit_limit'] ?? "";
-      lastTransactions =
-          jsonDecode(prefs.getString('last_transactions') ?? '"[]"');
+      nickname = user['nickname'] ?? "";
+      accountBalance = account['balance'] ?? 0;
+      accountLimit = account['credit_limit'] ?? 0;
+      lastTransactions = userData.lastTransactions;
     });
   }
 

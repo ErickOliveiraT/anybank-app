@@ -1,9 +1,10 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import "../actions/login_action.dart";
+import 'package:provider/provider.dart';
+import '../config/provider.dart';
 
 class AccountSelection extends StatefulWidget {
   @override
@@ -161,6 +162,12 @@ class _AccountSelectionState extends State<AccountSelection> {
                       loading = false;
                     });
                     if (loginResponse.success) {
+                      final userData =
+                          Provider.of<UserData>(context, listen: false);
+                      userData.setUser(loginResponse.user ?? {});
+                      userData.setAccount(loginResponse.account ?? {});
+                      userData.setLastTransactions(
+                          loginResponse.lastTransactions ?? []);
                       Navigator.of(context).pushReplacementNamed('/home');
                     } else {
                       _showToast(loginResponse.message[0]);
