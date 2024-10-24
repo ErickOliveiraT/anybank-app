@@ -1,6 +1,8 @@
+import 'package:anybank_app/config/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mask_text_input_formatter/mask_text_input_formatter.dart';
+import 'package:provider/provider.dart';
 import '../actions/account_action.dart';
 
 class TransferScreen1 extends StatefulWidget {
@@ -92,9 +94,9 @@ class _TransferScreenState extends State<TransferScreen1> {
                 });
                 final agency = _agencyFormatter.getUnmaskedText();
                 final account = _accountFormatter.getUnmaskedText();
-                final accountData = await findAccount(agency, account);
-                if (!accountData.success) {
-                  _showToast(accountData.message ?? "");
+                final accountSearch = await findAccount(agency, account);
+                if (!accountSearch.success) {
+                  _showToast(accountSearch.message);
                   setState(() {
                     loading = false;
                   });
@@ -103,10 +105,17 @@ class _TransferScreenState extends State<TransferScreen1> {
                 setState(() {
                   loading = false;
                 });
-                if (accountData.success) {
-                  Navigator.of(context).pushNamed('/transfer2');
+                if (accountSearch.success) {
+                  final destAccount =
+                      Provider.of<UserData>(context, listen: false);
+                  if (accountSearch.account != null) {
+                    destAccount.setDestinationAccount(accountSearch.account!);
+                    Navigator.of(context).pushNamed('/transfer2');
+                  } else {
+                    _showToast('Account data is null');
+                  }
                 } else {
-                  _showToast(accountData.message ?? "");
+                  _showToast(accountSearch.message);
                 }
               },
               style: ElevatedButton.styleFrom(

@@ -1,8 +1,8 @@
-import 'dart:convert';
+import 'package:anybank_app/config/provider.dart';
+import 'package:provider/provider.dart';
 import '../actions/transfer_action.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
 class TransferScreen2 extends StatefulWidget {
@@ -29,16 +29,17 @@ class _TransferScreen2State extends State<TransferScreen2> {
   bool loading = false;
 
   Future<void> _getDestAccountInfo() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    final account = jsonDecode(prefs.getString('account') ?? "{}");
+    final data = Provider.of<UserData>(context, listen: false);
+    final destAccount = data.destinationAccount;
+    final account = data.account;
     setState(() {
-      accountType = prefs.getString('dest_account_type') ?? "";
-      accountBranch = prefs.getString('dest_account_agency') ?? "";
-      accountNumber = prefs.getString('dest_account_number') ?? "";
-      destAccountId = prefs.getInt('dest_account_id') ?? -1;
-      holderName = prefs.getString('dest_account_holder_name') ?? "";
-      holderDoc = prefs.getString('dest_account_holder_doc') ?? "";
-      sourceAccountId = account['id'] ?? -1;
+      accountType = destAccount.type;
+      accountBranch = destAccount.agency;
+      accountNumber = destAccount.number;
+      destAccountId = destAccount.id;
+      holderName = destAccount.holderName;
+      holderDoc = destAccount.holderDoc;
+      sourceAccountId = account["id"];
     });
   }
 
